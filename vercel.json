@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd apps/frontend && npx next build",
+  "installCommand": "pnpm install",
+  "outputDirectory": "apps/frontend/.next"
+}
