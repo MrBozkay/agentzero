@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Bot, Trash2, MessageSquare } from 'lucide-react';
+import { Plus, Bot, Trash2, MessageSquare, Search, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,7 @@ export default function AgentsPage() {
   const [name, setName] = useState('');
   const [type, setType] = useState('chat');
   const [description, setDescription] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchAgents = async () => {
     const data = await api.agents.list();
@@ -42,82 +43,174 @@ export default function AgentsPage() {
     await fetchAgents();
   };
 
+  const filteredAgents = agents.filter(a =>
+    a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    a.type.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Agents</h1>
-        <Button onClick={() => setShowCreate(!showCreate)} className="bg-cyan-600 hover:bg-cyan-500">
-          <Plus className="h-4 w-4 mr-2" /> New Agent
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-slide-up">
+        <div>
+          <h1 className="text-2xl font-heading font-bold text-foreground">Agents</h1>
+          <p className="text-sm text-muted-foreground mt-1">{agents.length} agent{agents.length !== 1 ? 's' : ''} configured</p>
+        </div>
+        <Button onClick={() => setShowCreate(!showCreate)} className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 glow-cyan transition-all duration-300">
+          <Plus className="h-4 w-4" /> New Agent
         </Button>
       </div>
 
+      {/* Create Form */}
       {showCreate && (
-        <Card className="bg-slate-900 border-slate-800">
-          <CardHeader><CardTitle className="text-white text-lg">Create Agent</CardTitle></CardHeader>
+        <Card className="glass border-0 animate-scale-in">
+          <CardHeader>
+            <CardTitle className="font-heading text-lg text-foreground">Create New Agent</CardTitle>
+          </CardHeader>
           <CardContent>
             <form onSubmit={handleCreate} className="space-y-4">
-              <Input
-                placeholder="Agent name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="bg-slate-800 border-slate-700 text-white"
-              />
-              <Input
-                placeholder="Description (optional)"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white"
-              />
-              <Button type="submit" className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500">
-                <Bot className="h-4 w-4 mr-2" /> Create Agent
-              </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Agent Name</label>
+                  <Input
+                    placeholder="e.g., Customer Support Bot"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Type</label>
+                  <div className="flex gap-2">
+                    {['chat', 'assistant', 'automation'].map(t => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setType(t)}
+                        className={`px-3 py-2 rounded-lg text-sm capitalize transition-all duration-200 ${
+                          type === t
+                            ? 'bg-primary text-primary-foreground border border-primary'
+                            : 'bg-muted/50 text-muted-foreground border border-border hover:border-primary/30'
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Description <span className="text-muted-foreground">(optional)</span></label>
+                <Input
+                  placeholder="What does this agent do?"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Bot className="h-4 w-4 mr-2" /> Create Agent
+                </Button>
+                <Button type="button" variant="ghost" onClick={() => setShowCreate(false)} className="text-muted-foreground">
+                  Cancel
+                </Button>
+              </div>
             </form>
           </CardContent>
         </Card>
       )}
 
+      {/* Search */}
+      {!showCreate && agents.length > 0 && (
+        <div className="relative animate-slide-up stagger-2">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search agents..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="pl-9 bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50"
+          />
+        </div>
+      )}
+
+      {/* Agents Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {agents.map((agent) => (
-          <Card key={agent.id} className="bg-slate-900 border-slate-800 hover:border-slate-700 transition-colors">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center">
-                    <Bot className="h-4 w-4 text-white" />
-                  </div>
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} className="glass border-0 animate-pulse">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-white/[0.05]" />
                   <div>
-                    <CardTitle className="text-white text-sm">{agent.name}</CardTitle>
-                    <p className="text-xs text-slate-500">{agent.model}</p>
+                    <div className="h-4 bg-white/[0.05] rounded w-28 mb-2" />
+                    <div className="h-3 bg-white/[0.03] rounded w-16" />
                   </div>
                 </div>
-                <Badge variant="outline" className="text-xs border-slate-700 text-slate-400">
-                  {agent.type}
-                </Badge>
+                <div className="h-3 bg-white/[0.03] rounded w-full mb-2" />
+                <div className="h-3 bg-white/[0.03] rounded w-2/3" />
+              </CardContent>
+            </Card>
+          ))
+        ) : filteredAgents.length === 0 ? (
+          <Card className="glass border-0 col-span-full">
+            <CardContent className="py-16 text-center">
+              <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Bot className="h-8 w-8 text-primary" />
               </div>
-            </CardHeader>
-            <CardContent>
-              {agent.description && (
-                <p className="text-sm text-slate-400 mb-3 line-clamp-2">{agent.description}</p>
+              <p className="text-foreground font-medium mb-1">
+                {searchQuery ? 'No agents match your search' : 'No agents yet'}
+              </p>
+              <p className="text-muted-foreground text-sm mb-4">
+                {searchQuery ? 'Try a different search term' : 'Create your first AI agent to get started'}
+              </p>
+              {!searchQuery && (
+                <Button onClick={() => setShowCreate(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                  <Plus className="h-4 w-4 mr-2" /> Create Agent
+                </Button>
               )}
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="border-slate-700 text-slate-400 hover:text-white flex-1">
-                  <MessageSquare className="h-3 w-3 mr-1" /> Chat
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleDelete(agent.id)}
-                  className="border-slate-700 text-red-400 hover:text-red-300"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              </div>
             </CardContent>
           </Card>
-        ))}
-        {!loading && agents.length === 0 && (
-          <p className="text-slate-500 col-span-full text-center py-8">No agents yet. Create one!</p>
+        ) : (
+          filteredAgents.map((agent, i) => (
+            <Card key={agent.id} className={`glass glass-hover border-0 animate-slide-up stagger-${Math.min(i + 1, 5)} transition-all duration-300 group`}>
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-white/[0.06] flex items-center justify-center group-hover:border-primary/30 transition-all duration-300">
+                      <Bot className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-foreground text-sm font-medium">{agent.name}</CardTitle>
+                      <p className="text-xs text-muted-foreground mt-0.5">{agent.model}</p>
+                    </div>
+                  </div>
+                  <Badge variant="secondary" className="text-[10px] bg-muted/50 text-muted-foreground border-border">
+                    {agent.type}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {agent.description && (
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{agent.description}</p>
+                )}
+                <div className="flex gap-2">
+                  <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-white/[0.04] flex-1 transition-all duration-200">
+                    <MessageSquare className="h-3.5 w-3.5 mr-1.5" /> Chat
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleDelete(agent.id)}
+                    className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))
         )}
       </div>
     </div>
