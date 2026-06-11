@@ -43,6 +43,10 @@ export class ApiClient {
       this.request<{ accessToken: string; user: { id: string; email: string; name: string } }>(
         '/auth/login', { method: 'POST', body: JSON.stringify(body) }
       ),
+    googleAuth: (body: { googleIdToken: string }) =>
+      this.request<{ accessToken: string; user: { id: string; email: string; name: string } }>(
+        '/auth/google', { method: 'POST', body: JSON.stringify(body) }
+      ),
   };
 
   agents = {

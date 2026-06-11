@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { ArrowRight, Bot, Sparkles, BarChart3, Shield, Zap, Layers, ChevronRight, Star, Globe } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { Link } from 'next-view-transitions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -84,14 +85,31 @@ export default function HomePage() {
   const ctaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let gsap: any, ScrollTrigger: any;
-    let ctx: any;
+    let gsap: any, ScrollTrigger: any, ScrollToPlugin: any;
 
     async function initGsap() {
       const module = await import('gsap');
       gsap = module.default;
-      ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
-      gsap.registerPlugin(ScrollTrigger);
+      [ScrollTrigger, ScrollToPlugin] = await Promise.all([
+        import('gsap/ScrollTrigger'),
+        import('gsap/ScrollToPlugin'),
+      ]);
+      gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+      // Smooth scroll for nav links
+      document.querySelectorAll('nav a[href^="#"]').forEach(link => {
+        link.addEventListener('click', (e: Event) => {
+          e.preventDefault();
+          const target = link.getAttribute('href');
+          if (target) {
+            gsap.to(window, {
+              duration: 1.2,
+              scrollTo: { y: target, offsetY: 80 },
+              ease: 'power3.inOut',
+            });
+          }
+        });
+      });
 
       const fadeUp = (el: Element | null, delay = 0) => {
         if (!el) return;
@@ -143,12 +161,12 @@ export default function HomePage() {
               <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
             </nav>
             <div className="flex items-center gap-3">
-              <a href="/auth" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:block">Sign In</a>
-              <a href="/auth">
+              <Link href="/auth" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:block">Sign In</Link>
+              <Link href="/auth">
                 <Button className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/20 transition-all duration-200">
                   Get Started
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -170,11 +188,11 @@ export default function HomePage() {
               From chatbots to lead generation — no coding required.
             </p>
             <div className="reveal flex flex-col sm:flex-row justify-center gap-3">
-              <a href="/auth">
+              <Link href="/auth">
                 <Button size="lg" className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/25 text-base px-8 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/30">
                   Deploy Your First Agent <ArrowRight className="h-4 w-4" />
                 </Button>
-              </a>
+              </Link>
               <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-accent text-base px-8">
                 View Docs
               </Button>
@@ -325,7 +343,7 @@ export default function HomePage() {
                     <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
                     {p.tokens} tokens
                   </div>
-                  <a href="/auth" className="block pt-2">
+                  <Link href="/auth" className="block pt-2">
                     <Button className={`w-full ${
                       p.popular
                         ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-500/20'
@@ -333,7 +351,7 @@ export default function HomePage() {
                     }`}>
                       {p.cta}
                     </Button>
-                  </a>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
@@ -355,11 +373,11 @@ export default function HomePage() {
                 <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                   Join hundreds of teams building AI agents with AgentZero. Start free, no credit card required.
                 </p>
-                <a href="/auth">
+                <Link href="/auth">
                   <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/30">
                     Start Building Free <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
-                </a>
+                </Link>
               </CardContent>
             </Card>
           </div>

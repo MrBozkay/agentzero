@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { ViewTransitions } from "next-view-transitions";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,11 +31,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-background text-foreground">{children}</body>
-    </html>
+    <ViewTransitions>
+      <html
+        lang="en"
+        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      >
+        <body className="min-h-full flex flex-col bg-background text-foreground">{children}</body>
+      </html>
+    </ViewTransitions>
   );
 }

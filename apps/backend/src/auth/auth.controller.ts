@@ -16,4 +16,11 @@ export class AuthController {
   async login(@Body() dto: { email: string; password: string }) {
     return this.auth.login(dto);
   }
+
+  @Post('google')
+  @HttpCode(HttpStatus.OK)
+  async googleAuth(@Body() dto: { googleIdToken: string }) {
+    const payload = await this.auth.verifyGoogleToken(dto.googleIdToken);
+    return this.auth.googleAuth(payload);
+  }
 }
