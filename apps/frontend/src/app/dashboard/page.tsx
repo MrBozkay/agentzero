@@ -24,16 +24,34 @@ export default function DashboardPage() {
 
   const totalTokens = usage.totalTokensInput + usage.totalTokensOutput;
 
+  const statCards = [
+    {
+      label: 'Active Agents', value: loading ? null : agents.length,
+      desc: agents.length > 0 ? `${agents.length} agent${agents.length > 1 ? 's' : ''} running` : 'No agents yet',
+      icon: Bot, color: 'text-indigo-600', bg: 'bg-indigo-50',
+    },
+    {
+      label: 'Total Tokens', value: loading ? null : totalTokens.toLocaleString(),
+      desc: loading ? '...' : `${usage.totalTokensInput.toLocaleString()} in / ${usage.totalTokensOutput.toLocaleString()} out`,
+      icon: MessageSquare, color: 'text-violet-600', bg: 'bg-violet-50',
+    },
+    {
+      label: 'Total Cost', value: loading ? null : `$${usage.totalCostUsd.toFixed(4)}`,
+      desc: 'This month',
+      icon: BarChart3, color: 'text-emerald-600', bg: 'bg-emerald-50',
+    },
+  ];
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between animate-slide-up">
         <div>
           <h1 className="text-2xl font-heading font-bold text-foreground">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">Welcome back! Here's your agent overview.</p>
+          <p className="text-sm text-muted-foreground mt-1">Welcome back! Here&apos;s your agent overview.</p>
         </div>
         <Link href="/dashboard/agents">
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 glow-cyan transition-all duration-300">
+          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 shadow-lg shadow-indigo-500/20 transition-all duration-300">
             <Bot className="h-4 w-4" /> New Agent
           </Button>
         </Link>
@@ -41,67 +59,33 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="glass glass-hover animate-slide-up stagger-1 border-0 transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active Agents</CardTitle>
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Bot className="h-4 w-4 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-heading font-bold text-foreground">
-              {loading ? <span className="animate-pulse text-muted-foreground">—</span> : agents.length}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {agents.length > 0 ? `${agents.length} agent${agents.length > 1 ? 's' : ''} running` : 'No agents yet'}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="glass glass-hover animate-slide-up stagger-2 border-0 transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Tokens</CardTitle>
-            <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
-              <MessageSquare className="h-4 w-4 text-purple-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-heading font-bold text-foreground">
-              {loading ? <span className="animate-pulse text-muted-foreground">—</span> : totalTokens.toLocaleString()}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {loading ? 'Loading...' : `${usage.totalTokensInput.toLocaleString()} in / ${usage.totalTokensOutput.toLocaleString()} out`}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="glass glass-hover animate-slide-up stagger-3 border-0 transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Cost</CardTitle>
-            <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-              <BarChart3 className="h-4 w-4 text-emerald-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-heading font-bold text-foreground">
-              {loading ? <span className="animate-pulse text-muted-foreground">—</span> : `$${usage.totalCostUsd.toFixed(4)}`}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {loading ? 'Loading...' : 'This month'}
-            </p>
-          </CardContent>
-        </Card>
+        {statCards.map((stat, i) => (
+          <Card key={stat.label} className={`glass border-white/80 hover:shadow-md hover:border-indigo-200/50 animate-slide-up stagger-${i + 1} transition-all duration-300`}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">{stat.label}</CardTitle>
+              <div className={`h-8 w-8 rounded-lg ${stat.bg} flex items-center justify-center`}>
+                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-heading font-bold text-foreground">
+                {loading ? <span className="animate-pulse text-muted-foreground">—</span> : stat.value}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">{stat.desc}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Recent Agents */}
-      <Card className="glass animate-slide-up stagger-4 border-0">
+      <Card className="glass border-white/80 animate-slide-up stagger-4">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="font-heading text-foreground">Recent Agents</CardTitle>
             <p className="text-xs text-muted-foreground mt-1">Your latest AI agents</p>
           </div>
           <Link href="/dashboard/agents">
-            <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80 text-xs">
+            <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-700 text-xs">
               View All <ArrowRight className="h-3 w-3 ml-1" />
             </Button>
           </Link>
@@ -110,24 +94,24 @@ export default function DashboardPage() {
           {loading ? (
             <div className="space-y-3">
               {[1, 2, 3].map(i => (
-                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] animate-pulse">
-                  <div className="h-8 w-8 rounded-lg bg-white/[0.05]" />
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-muted animate-pulse">
+                  <div className="h-8 w-8 rounded-lg bg-muted-foreground/20" />
                   <div className="flex-1">
-                    <div className="h-3.5 bg-white/[0.05] rounded w-32 mb-2" />
-                    <div className="h-2.5 bg-white/[0.03] rounded w-20" />
+                    <div className="h-3.5 bg-muted-foreground/20 rounded w-32 mb-2" />
+                    <div className="h-2.5 bg-muted-foreground/20 rounded w-20" />
                   </div>
                 </div>
               ))}
             </div>
           ) : agents.length === 0 ? (
             <div className="text-center py-10">
-              <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                <Bot className="h-6 w-6 text-primary" />
+              <div className="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center mx-auto mb-3 border border-indigo-200">
+                <Bot className="h-6 w-6 text-indigo-600" />
               </div>
               <p className="text-muted-foreground text-sm mb-1">No agents yet</p>
               <p className="text-muted-foreground/60 text-xs mb-4">Create your first AI agent to get started</p>
               <Link href="/dashboard/agents">
-                <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white">
                   <Bot className="h-3.5 w-3.5 mr-1.5" /> Create Agent
                 </Button>
               </Link>
@@ -138,16 +122,16 @@ export default function DashboardPage() {
                 <Link
                   key={agent.id}
                   href="/dashboard/agents"
-                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.04] transition-all duration-200 group border border-transparent hover:border-white/[0.06]"
+                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent transition-all duration-200 group border border-transparent hover:border-indigo-100"
                 >
-                  <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-white/[0.06] flex items-center justify-center group-hover:border-primary/30 transition-all duration-200">
-                    <Bot className="h-4 w-4 text-primary" />
+                  <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-200/50 flex items-center justify-center group-hover:border-indigo-300/50 transition-all duration-200">
+                    <Bot className="h-4 w-4 text-indigo-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{agent.name}</p>
                     <p className="text-xs text-muted-foreground">{agent.model}</p>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
+                  <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all duration-200" />
                 </Link>
               ))}
             </div>

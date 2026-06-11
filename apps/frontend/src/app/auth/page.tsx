@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bot, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Bot, ArrowRight, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -45,20 +45,20 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-transparent to-purple-500/[0.04]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/[0.02] rounded-full blur-[100px]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/60 via-transparent to-violet-50/60" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-100/30 rounded-full blur-[100px]" />
       </div>
 
       <div className="w-full max-w-md px-4 relative z-10 animate-fade-in">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2.5 mb-8 animate-slide-up">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center glow-cyan">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
             <Bot className="h-5 w-5 text-white" />
           </div>
           <span className="text-2xl font-heading font-bold text-foreground">AgentZero</span>
         </div>
 
-        <Card className="glass border-0 animate-slide-up stagger-1">
+        <Card className="glass border-white/80 animate-slide-up stagger-1">
           <CardHeader className="text-center">
             <CardTitle className="font-heading text-xl text-foreground">
               {isLogin ? 'Welcome Back' : 'Create Account'}
@@ -76,7 +76,7 @@ export default function AuthPage() {
                     placeholder="Your name"
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50"
+                    className="bg-white border-border text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-indigo-500"
                   />
                 </div>
               )}
@@ -89,7 +89,7 @@ export default function AuthPage() {
                   onChange={e => setEmail(e.target.value)}
                   required
                   autoComplete="email"
-                  className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50"
+                  className="bg-white border-border text-foreground placeholder:text-muted-foreground/50 focus-visible:ring-indigo-500"
                 />
               </div>
               <div className="space-y-2">
@@ -102,7 +102,7 @@ export default function AuthPage() {
                     onChange={e => setPassword(e.target.value)}
                     required
                     autoComplete={isLogin ? 'current-password' : 'new-password'}
-                    className="bg-muted/50 border-border text-foreground placeholder:text-muted-foreground/50 pr-10"
+                    className="bg-white border-border text-foreground placeholder:text-muted-foreground/50 pr-10 focus-visible:ring-indigo-500"
                   />
                   <button
                     type="button"
@@ -115,19 +115,19 @@ export default function AuthPage() {
               </div>
 
               {error && (
-                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                  <p className="text-sm text-destructive">{error}</p>
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-700">{error}</p>
                 </div>
               )}
 
               <Button
                 type="submit"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground gap-2 transition-all duration-200"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white gap-2 shadow-lg shadow-indigo-500/20 transition-all duration-200"
                 disabled={loading}
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
-                    <span className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                    <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Please wait...
                   </span>
                 ) : (
@@ -143,16 +143,30 @@ export default function AuthPage() {
                   <div className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="bg-card px-2 text-muted-foreground">or</span>
+                  <span className="bg-white px-2 text-muted-foreground">or continue with</span>
                 </div>
               </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full border-border text-foreground hover:bg-accent hover:text-foreground gap-2"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Continue with Google
+              </Button>
 
               <p className="text-center text-sm text-muted-foreground">
                 {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
                 <button
                   type="button"
                   onClick={() => { setIsLogin(!isLogin); setError(''); }}
-                  className="text-primary hover:text-primary/80 font-medium transition-colors"
+                  className="text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
                 >
                   {isLogin ? 'Sign up' : 'Sign in'}
                 </button>
