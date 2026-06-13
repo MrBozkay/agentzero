@@ -1,16 +1,15 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 let supabaseInstance: SupabaseClient | null = null;
 
-export function getSupabaseClient(): SupabaseClient | null {
+export async function getSupabaseClient(): Promise<SupabaseClient> {
   if (supabaseInstance) return supabaseInstance;
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // Dynamic import to avoid SSR evaluation of @supabase/supabase-js
+  const { createClient } = await import('@supabase/supabase-js');
 
-  if (!url || !key || url.includes('placeholder') || key.includes('placeholder')) {
-    return null;
-  }
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
   supabaseInstance = createClient(url, key, {
     auth: {
@@ -23,6 +22,3 @@ export function getSupabaseClient(): SupabaseClient | null {
 
   return supabaseInstance;
 }
-
-// Backward-compatible export — may be null if env vars missing
-export const supabase = getSupabaseClient();
