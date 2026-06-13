@@ -31,11 +31,11 @@ vi.mock('@/lib/api', () => ({
 
 // Mock Supabase
 vi.mock('@/lib/supabase', () => ({
-  supabase: {
+  getSupabaseClient: () => ({
     auth: {
       signInWithOAuth: vi.fn().mockResolvedValue({ data: null, error: null }),
     },
-  },
+  }),
 }));
 
 import { api } from '@/lib/api';

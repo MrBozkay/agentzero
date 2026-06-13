@@ -5,11 +5,11 @@ import AuthCallbackPage from '@/app/auth/callback/page';
 // Mock Supabase
 const mockExchangeCode = vi.fn();
 vi.mock('@/lib/supabase', () => ({
-  supabase: {
+  getSupabaseClient: () => ({
     auth: {
       exchangeCodeForSession: (...args: any[]) => mockExchangeCode(...args),
     },
-  },
+  }),
 }));
 
 // Mock API

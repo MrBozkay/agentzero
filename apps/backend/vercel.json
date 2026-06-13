@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "buildCommand": "cd ../.. && npx turbo build --filter=backend",
-  "outputDirectory": ".next",
-  "framework": "nestjs",
-  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && pnpm install --no-frozen-lockfile && npx turbo build --filter=backend",
+  "outputDirectory": "dist",
+  "framework": null,
+  "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
+    { "source": "/api/(.*)", "destination": "/api/serverless" }
   ]
 }

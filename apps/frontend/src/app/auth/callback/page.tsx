@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { getSupabaseClient } from '@/lib/supabase';
 import { api } from '@/lib/api';
 import { Loader2 } from 'lucide-react';
 
@@ -13,8 +13,11 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     async function handleCallback() {
       try {
+        const sb = getSupabaseClient();
+        if (!sb) throw new Error('Supabase client not initialized');
+
         // Supabase PKCE flow: exchange code for session
-        const { data, error } = await supabase.auth.exchangeCodeForSession(
+        const { data, error } = await sb.auth.exchangeCodeForSession(
           window.location.href,
         );
 

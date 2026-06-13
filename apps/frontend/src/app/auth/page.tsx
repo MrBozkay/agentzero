@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { api } from '@/lib/api';
-import { supabase } from '@/lib/supabase';
+import { getSupabaseClient } from '@/lib/supabase';
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
 
@@ -65,7 +65,9 @@ function AuthForm() {
   const handleSupabaseGoogle = async () => {
     setError('');
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const sb = getSupabaseClient();
+      if (!sb) throw new Error('Supabase client not initialized');
+      const { data, error } = await sb.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
