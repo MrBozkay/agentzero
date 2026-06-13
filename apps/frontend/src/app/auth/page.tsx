@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bot, ArrowRight, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Bot, ArrowRight, Eye, EyeOff, Sparkles, Shield } from 'lucide-react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { api } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
 
@@ -58,6 +59,22 @@ function AuthForm() {
       setError(err instanceof Error ? err.message : 'Google sign-in failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSupabaseGoogle = async () => {
+    setError('');
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+      // Browser will redirect to Google — no further action needed
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Supabase Google sign-in failed');
     }
   };
 
@@ -168,6 +185,25 @@ function AuthForm() {
               </p>
             )}
           </div>
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-white px-2 text-muted-foreground">or sign in with Supabase</span>
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full gap-2 border-border hover:bg-indigo-50 hover:border-indigo-200 transition-all"
+            onClick={handleSupabaseGoogle}
+          >
+            <Shield className="h-4 w-4 text-indigo-600" />
+            Continue with Google (Supabase)
+          </Button>
 
           <p className="text-center text-sm text-muted-foreground">
             {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}

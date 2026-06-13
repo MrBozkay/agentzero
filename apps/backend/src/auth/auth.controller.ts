@@ -21,6 +21,16 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async googleAuth(@Body() dto: { googleIdToken: string }) {
     const payload = await this.auth.verifyGoogleToken(dto.googleIdToken);
-    return this.auth.googleAuth(payload);
+    return this.auth.googleAuth({
+      googleId: payload.googleId,
+      email: payload.email,
+      name: payload.name ?? undefined,
+    });
+  }
+
+  @Post('supabase')
+  @HttpCode(HttpStatus.OK)
+  async supabaseAuth(@Body() dto: { accessToken: string }) {
+    return this.auth.supabaseAuth(dto.accessToken);
   }
 }

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "buildCommand": "cd ../.. && npx turbo build --filter=backend",
+  "outputDirectory": ".next",
+  "framework": "nestjs",
+  "installCommand": "cd ../.. && pnpm install",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" }
+  ]
+}

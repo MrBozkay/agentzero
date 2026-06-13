@@ -47,6 +47,10 @@ export class ApiClient {
       this.request<{ accessToken: string; user: { id: string; email: string; name: string } }>(
         '/auth/google', { method: 'POST', body: JSON.stringify(body) }
       ),
+    supabaseAuth: (body: { accessToken: string }) =>
+      this.request<{ accessToken: string; user: { id: string; email: string; name: string } }>(
+        '/auth/supabase', { method: 'POST', body: JSON.stringify(body) }
+      ),
   };
 
   agents = {

@@ -37,6 +37,15 @@ describe('AgentZero (e2e)', () => {
     });
   });
 
+  describe('POST /api/v1/auth/google', () => {
+    it('should return 401 for invalid google token', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/auth/google')
+        .send({ googleIdToken: 'invalid-token' })
+        .expect(401);
+    });
+  });
+
   describe('GET /api/v1/agents', () => {
     it('should return 200 (using hardcoded userId)', () => {
       return request(app.getHttpServer())

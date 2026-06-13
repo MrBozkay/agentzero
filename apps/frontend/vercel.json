@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npx next build",
+  "buildCommand": "cd ../.. && pnpm install --no-frozen-lockfile && cd apps/frontend && npx next build",
   "outputDirectory": ".next",
-  "installCommand": "npm install -g pnpm && pnpm install",
+  "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
   "framework": "nextjs"
 }
