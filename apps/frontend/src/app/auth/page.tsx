@@ -65,7 +65,7 @@ function AuthForm() {
   const handleSupabaseGoogle = async () => {
     setError('');
     try {
-      const sb = getSupabaseClient();
+      const sb = await getSupabaseClient();
       if (!sb) throw new Error('Supabase client not initialized');
       const { data, error } = await sb.auth.signInWithOAuth({
         provider: 'google',

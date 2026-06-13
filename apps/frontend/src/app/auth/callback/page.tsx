@@ -13,7 +13,7 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     async function handleCallback() {
       try {
-        const sb = getSupabaseClient();
+        const sb = await getSupabaseClient();
         if (!sb) throw new Error('Supabase client not initialized');
 
         // Supabase PKCE flow: exchange code for session
