@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: agentzero-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: apps/backend
+    buildCommand: pnpm install && pnpm prisma generate && pnpm build
+    startCommand: pnpm start:prod
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: CORS_ORIGIN
+        value: https://agentzero-pi.vercel.app
+      - key: SUPABASE_URL
+        value: https://urbepqdhgeuklwixvspe.supabase.co
+      # Secrets — you set these in Render Dashboard after Apply
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
