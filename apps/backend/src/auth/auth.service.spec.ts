@@ -27,6 +27,7 @@ describe('AuthService', () => {
     passwordHash: null,
     avatarUrl: null,
     plan: 'FREE',
+    role: 'USER',
     createdAt: new Date('2025-01-01'),
     updatedAt: new Date('2025-01-01'),
   };
@@ -119,6 +120,53 @@ describe('AuthService', () => {
       const result = await service.login({ email: 'test@gmail.com', password: 'password123' });
       expect(result.accessToken).toBe('mock-jwt-token');
       expect(result.user.email).toBe('test@gmail.com');
+    });
+  });
+
+  // 🔴 RED — Slice 1: User model must have a `role` field defaulting to USER
+  describe('user role (authorization primitive)', () => {
+    it('should default new user role to USER on register', async () => {
+      prisma.user.findUnique.mockResolvedValue(null);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('$2b$10$hashed');
+      prisma.user.create.mockResolvedValue(mockUser);
+
+      const result = await service.register({
+        email: 'newuser@gmail.com',
+        password: 'password123',
+        name: 'New User',
+      });
+
+      // New users must default to USER role (admin promotion is explicit)
+      expect(result.user.role).toBe('USER');
+    });
+
+    it('should include role in login response', async () => {
+      prisma.user.findUnique.mockResolvedValue({ ...mockUser, passwordHash: '$2b$10$hash' });
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      const result = await service.login({ email: 'test@gmail.com', password: 'password123' });
+
+      expect(result.user.role).toBe('USER');
+    });
+
+    it('should reflect admin role in login response when user is admin', async () => {
+      prisma.user.findUnique.mockResolvedValue({
+        ...mockUser,
+        passwordHash: '$2b$10$hash',
+        role: 'ADMIN',
+      });
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      const result = await service.login({ email: 'admin@email.com', password: 'password123' });
+
+      expect(result.user.role).toBe('ADMIN');
+    });
+
+    it('should expose role enum values', () => {
+      // Prisma's Role enum must be queryable at runtime
+      const { Role } = require('@prisma/client');
+      expect(Role.USER).toBe('USER');
+      expect(Role.ADMIN).toBe('ADMIN');
     });
   });
 

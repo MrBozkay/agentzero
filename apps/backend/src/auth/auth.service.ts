@@ -49,6 +49,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         plan: user.plan,
+        role: user.role,
       },
     };
   }
@@ -75,6 +76,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         plan: user.plan,
+        role: user.role,
       },
     };
   }
@@ -98,6 +100,7 @@ export class AuthService {
           email: existing.email,
           name: existing.name,
           plan: existing.plan,
+          role: existing.role,
         },
       };
     }
@@ -120,6 +123,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         plan: user.plan,
+        role: user.role,
       },
     };
   }
@@ -193,6 +197,7 @@ export class AuthService {
           email: existing.email,
           name: existing.name,
           plan: existing.plan,
+          role: existing.role,
         },
       };
     }
@@ -216,6 +221,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         plan: user.plan,
+        role: user.role,
       },
     };
   }

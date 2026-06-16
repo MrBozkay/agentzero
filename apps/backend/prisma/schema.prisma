@@ -3,7 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Plan {
@@ -11,6 +13,11 @@ enum Plan {
   STARTER
   GROWTH
   SCALE
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model User {
@@ -22,6 +29,7 @@ model User {
   name         String?
   avatarUrl    String?
   plan         Plan     @default(FREE)
+  role         Role     @default(USER)
 
   agents        Agent[]
   conversations Conversation[]

@@ -1,5 +1,20 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
+import { Request } from 'express';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
+
+interface AuthedRequest extends Request {
+  user: { id: string; email: string; role: string; plan: string };
+}
 
 @Controller('api/v1/auth')
 export class AuthController {
@@ -32,5 +47,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async supabaseAuth(@Body() dto: { accessToken: string }) {
     return this.auth.supabaseAuth(dto.accessToken);
+  }
+
+  /**
+   * GET /api/v1/auth/me
+   * Returns the currently-authenticated user. Source of truth is `req.user`,
+   * populated by JwtAuthGuard + JwtStrategy.
+   */
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async me(@Req() req: AuthedRequest) {
+    return req.user;
   }
 }
